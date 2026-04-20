@@ -77,7 +77,7 @@ st.markdown("""
 # --- Load Model ---
 @st.cache_resource
 def load_model():
-    model_path = os.path.join(os.path.dirname(__file__), "dog_cat_classifier.h5")
+    model_path = os.path.join(os.path.dirname(__file__), "dog_cat_classifier_v2.keras")
     return tf.keras.models.load_model(model_path)
 
 model = load_model()
