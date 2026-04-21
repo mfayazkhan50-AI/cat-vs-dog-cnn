@@ -97,8 +97,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.warning("⚠️ This model is trained only on dogs and cats. Other images may give incorrect results.")
 
+st.warning("⚠️ This model is trained only on dogs and cats. Please do not upload human or other images — results will be incorrect.")
 st.markdown("---")
 
 # --- Upload ---
