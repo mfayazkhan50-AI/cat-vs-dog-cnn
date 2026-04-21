@@ -97,6 +97,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+st.warning("⚠️ This model is trained only on dogs and cats. Other images may give incorrect results.")
+
 st.markdown("---")
 
 # --- Upload ---
@@ -107,32 +109,46 @@ if file is not None:
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.image(image, use_container_width=True, caption="Uploaded Image")  # fixed
+        st.image(image, use_container_width=True, caption="Uploaded Image")
 
     with st.spinner("Analyzing..."):
         processed = preprocess(image)
         pred = model.predict(processed, verbose=0)[0][0]
 
     is_dog = pred > 0.5
-    label = "🐶 Dog" if is_dog else "🐱 Cat"
     confidence = pred if is_dog else 1 - pred
-    color = "#f59e0b" if is_dog else "#6366f1"
 
-    st.markdown(f"""
-        <div class="result-card">
-            <div class="result-label" style="color: {color};">{label}</div>
-            <div class="result-confidence">Confidence: {confidence:.1%}</div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("---")
 
-    st.progress(float(confidence))
+    # --- Confidence threshold check ---
+    if confidence < 0.85:
+        st.markdown("""
+            <div class="result-card">
+                <div class="result-label">🤔</div>
+                <div class="result-confidence" style="font-size:1.1rem; opacity:1;">
+                    Not sure! Please upload a clear dog or cat image.
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        label = "🐶 Dog" if is_dog else "🐱 Cat"
+        color = "#f59e0b" if is_dog else "#6366f1"
 
-    with st.expander("📊 Detailed Probabilities"):
-        c1, c2 = st.columns(2)
-        with c1:
-            st.metric("🐶 Dog", f"{pred:.1%}")
-        with c2:
-            st.metric("🐱 Cat", f"{1 - pred:.1%}")
+        st.markdown(f"""
+            <div class="result-card">
+                <div class="result-label" style="color: {color};">{label}</div>
+                <div class="result-confidence">Confidence: {confidence:.1%}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.progress(float(confidence))
+
+        with st.expander("📊 Detailed Probabilities"):
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("🐶 Dog", f"{pred:.1%}")
+            with c2:
+                st.metric("🐱 Cat", f"{1 - pred:.1%}")
 
 else:
     st.markdown("""
