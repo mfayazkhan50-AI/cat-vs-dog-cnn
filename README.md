@@ -1,6 +1,8 @@
-# 🐾 Cat vs Dog Classifier
+#  Cat vs Dog Classifier — Model Progression Study
 
-A deep learning web app that classifies images as **Dog** or **Cat** using a Convolutional Neural Network (CNN) built from scratch with TensorFlow/Keras.
+> **From 83% to 97.34% accuracy — a step-by-step CNN journey from scratch to fine-tuned MobileNetV2.**
+
+A deep learning project that classifies images as **Dog** or **Cat** using four progressive approaches, showing exactly how each technique improves real-world performance.
 
 🔗 **Live Demo:** [cat-vs-dog-recognizer.streamlit.app](https://cat-vs-dog-recognizer.streamlit.app/)
 
@@ -14,49 +16,104 @@ A deep learning web app that classifies images as **Dog** or **Cat** using a Con
 
 ---
 
-## 🧠 Model Architecture
+## 🧠 Model Architectures
 
-Built from scratch using TensorFlow/Keras Sequential API:
+### 1. Scratch CNN
+> No augmentation — pure baseline to measure improvement.
+
+Built from scratch using TensorFlow/Keras Functional API:
 
 ```
-Input (256x256x3)
+Input (128×128×3)
     ↓
-Conv2D(32) → BatchNorm → MaxPooling
+Conv2D(32, relu) → MaxPooling
     ↓
-Conv2D(64) → BatchNorm → MaxPooling
+Conv2D(64, relu) → MaxPooling
     ↓
-Conv2D(128) → BatchNorm → MaxPooling
+Conv2D(128, relu) → MaxPooling
     ↓
-Flatten → Dense(128) → Dropout(0.3)
-    ↓
-Dense(64) → Dropout(0.2)
+Flatten → Dense(128, relu) → Dropout(0.3)
     ↓
 Dense(1, sigmoid) → Output
 ```
 
 ---
 
+### 2. Scratch CNN + Data Augmentation
+> Same architecture, but teaches the model to handle real-world image variation.
+
+```
+RandomFlip (horizontal)
+RandomRotation (±10%)
+RandomZoom (±10%)
+    ↓
+[Same CNN architecture as above]
+```
+
+---
+
+### 3. Transfer Learning (MobileNetV2)
+> Why train from scratch when ImageNet already learned the visual world?
+
+Pretrained MobileNetV2 (ImageNet) used as a frozen feature extractor:
+
+```
+Input (128×128×3)
+    ↓
+MobileNetV2 (frozen, ImageNet weights)
+    ↓
+GlobalAveragePooling2D
+    ↓
+Dense(128, relu) → Dropout(0.3)
+    ↓
+Dense(1, sigmoid) → Output
+```
+
+---
+
+### 4. Fine-Tuned MobileNetV2
+> Unfreezing the last 30 layers and retraining carefully — the final performance push.
+
+```
+MobileNetV2 (last 30 layers unfrozen)
+    ↓
+Adam(learning_rate=1e-5) — to preserve pretrained features
+    ↓
+[Same custom head as Transfer Learning]
+```
+
+---
+
 ## 📊 Training Results
 
-| Metric | Value |
-|--------|-------|
-| Dataset | Dogs vs Cats (20,000 images) |
-| Input Size | 256 × 256 |
-| Best Val Accuracy | **85.6%** |
+| Model | Val Accuracy | Key Detail |
+|-------|-------------|------------|
+| Scratch CNN | 83.00% | Baseline, no augmentation |
+| Scratch + Augmentation | 88.72% | RandomFlip / Rotation / Zoom |
+| Transfer Learning | 96.88% | MobileNetV2 frozen, ImageNet weights |
+| **Fine-Tuned MobileNetV2** | **97.34%** | Last 30 layers unfrozen |
+
+**Common Training Config:**
+
+| Setting | Value |
+|---------|-------|
+| Dataset | Dogs vs Cats (Kaggle) |
+| Train / Val Split | 20,000 / 5,000 images |
+| Input Size | 128 × 128 |
 | Optimizer | Adam |
 | Loss | Binary Crossentropy |
-| Early Stopping | patience=3 |
-
-Training was stopped early at **Epoch 2** (best weights) to prevent overfitting.
+| Early Stopping | patience=3, restore_best_weights=True |
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Model:** TensorFlow / Keras
+- **Pretrained Base:** MobileNetV2 (ImageNet)
 - **App:** Streamlit
 - **Deployment:** Streamlit Cloud
-- **Version Control:** Git + Git LFS (model ~170MB)
+- **Training Hardware:** Tesla T4 GPU (Kaggle)
+- **Version Control:** Git + Git LFS
 
 ---
 
@@ -76,10 +133,11 @@ streamlit run app.py
 ```
 cat-vs-dog-cnn/
 │
-├── app.py                        # Streamlit web app
-├── dog_cat_classifier_v2.keras   # Trained CNN model
-├── requirements.txt              # Dependencies
-└── README.md                     # You are here
+├── app.py                            # Streamlit web app
+├── cat-vs-dog-data_augmented.keras   # Scratch CNN + Augmentation model
+├── dog_cat_final.keras               # Final fine-tuned MobileNetV2 model
+├── requirements.txt                  # Dependencies
+└── README.md                         # You are here
 ```
 
 ---
@@ -87,20 +145,30 @@ cat-vs-dog-cnn/
 ## 🔍 How It Works
 
 1. User uploads a JPG/PNG image
-2. Image is resized to 256×256 and normalized
-3. CNN model predicts probability (sigmoid output)
+2. Image is resized to 128×128 and normalized to [0, 1]
+3. Model predicts probability via sigmoid output
 4. Result shown with confidence score and probability breakdown
+
+---
+
+## 💡 Key Learnings
+
+- Data augmentation reduces overfitting and improves generalization by ~5%
+- Transfer learning delivers drastically better accuracy with far less training time
+- Fine-tuning with `learning_rate=1e-5` pushes accuracy further without destroying pretrained features
+- `EarlyStopping` with `restore_best_weights=True` is essential to avoid overfitting
 
 ---
 
 ## 👨‍💻 Developer
 
 **M. Fayaz Khan** — Aspiring AI/ML Engineer  
-Self-taught, building real projects from scratch.
+Self-taught, building real projects from scratch.  
+🔗 [GitHub](https://github.com/mfayazkhan50-AI)
 
 ---
 
 ## 📌 Note
 
 This is a learning project built as part of a structured AI/ML journey.  
-Model trained on Google Colab, deployed on Streamlit Cloud.
+All models trained on Kaggle (Tesla T4 GPU), final app deployed on Streamlit Cloud.
