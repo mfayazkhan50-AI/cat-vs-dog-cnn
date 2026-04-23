@@ -164,7 +164,7 @@ cat-vs-dog-cnn/
 
 **M. Fayaz Khan** — Aspiring AI/ML Engineer  
 Self-taught, building real projects from scratch.  
-🔗 [GitHub](https://github.com/mfayazkhan50-AI)
+🔗 [GitHub](https://www.linkedin.com/in/muhammad-fayaz-khan-271487381/)
 
 ---
 
