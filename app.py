@@ -77,7 +77,7 @@ st.markdown("""
 # --- Load Model ---
 @st.cache_resource
 def load_model():
-    model_path = os.path.join(os.path.dirname(__file__), "dog_cat_classifier_v2.keras")
+    model_path = os.path.join(os.path.dirname(__file__), "dog_cat_final.keras")
     return tf.keras.models.load_model(model_path)
 
 model = load_model()
@@ -85,9 +85,9 @@ model = load_model()
 # --- Preprocessing ---
 def preprocess(image):
     img = image.convert("RGB")
-    img = img.resize((256, 256))
+    img = img.resize((128, 128))
     arr = np.array(img).astype("float32") / 255.0
-    return arr.reshape(1, 256, 256, 3)
+    return arr.reshape(1, 128, 128, 3)
 
 # --- Header ---
 st.markdown("""
@@ -126,7 +126,7 @@ if file is not None:
             <div class="result-card">
                 <div class="result-label">🤔</div>
                 <div class="result-confidence" style="font-size:1.1rem; opacity:1;">
-                    Not sure! Please upload a clear dog or cat image.
+                    This doesn't look like a cat or dog!. Please upload a clear dog or cat image.
                 </div>
             </div>
         """, unsafe_allow_html=True)
